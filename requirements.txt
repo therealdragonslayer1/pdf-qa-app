@@ -1,0 +1,6 @@
+flask==3.0.0
+pdfplumber==0.10.3
+ibm-watson==8.1.0
+ibm-cloud-sdk-core==3.20.3
+werkzeug==3.0.1
+gunicorn

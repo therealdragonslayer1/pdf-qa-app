@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Oracle — Ask Anything</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Ambient background orbs ── -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="app-shell">
+
+    <!-- ── Header ── -->
+    <header class="site-header">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">PDF <em>Oracle</em></span>
+      </div>
+      <p class="tagline">Upload a document · Ask anything · Hear the answer</p>
+    </header>
+
+    <main class="main-grid">
+
+      <!-- ═══ LEFT COLUMN: Upload + Question ═══ -->
+      <section class="panel panel-input">
+
+        <!-- Step 1 – Upload -->
+        <div class="step" id="step-upload">
+          <div class="step-label"><span class="step-num">01</span> Upload PDF</div>
+
+          <div class="drop-zone" id="dropZone">
+            <div class="drop-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 12 15 15"/>
+              </svg>
+            </div>
+            <p class="drop-hint">Drop your PDF here<br><span>or click to browse</span></p>
+            <input type="file" id="pdfInput" accept=".pdf" hidden />
+          </div>
+
+          <div class="file-info hidden" id="fileInfo">
+            <span class="file-icon">📄</span>
+            <span class="file-name" id="fileName"></span>
+            <button class="btn-remove" id="btnRemove" title="Remove">✕</button>
+          </div>
+
+          <button class="btn btn-primary" id="btnUpload" disabled>
+            <span class="btn-text">Process Document</span>
+            <span class="btn-loader hidden"></span>
+          </button>
+
+          <div class="upload-meta hidden" id="uploadMeta"></div>
+        </div>
+
+        <!-- Divider -->
+        <div class="step-divider"></div>
+
+        <!-- Step 2 – Ask -->
+        <div class="step" id="step-ask">
+          <div class="step-label"><span class="step-num">02</span> Ask a Question</div>
+
+          <div class="question-wrap">
+            <textarea
+              id="questionInput"
+              class="question-input"
+              placeholder="What is the main conclusion of this document?"
+              rows="4"
+              disabled
+            ></textarea>
+            <span class="char-counter" id="charCounter">0 / 300</span>
+          </div>
+
+          <button class="btn btn-accent" id="btnAsk" disabled>
+            <span class="btn-text">Get Answer</span>
+            <span class="btn-loader hidden"></span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ═══ RIGHT COLUMN: Answer + Audio ═══ -->
+      <section class="panel panel-output">
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-glyph">◈</div>
+          <p>Your answer will appear<br>here after you ask.</p>
+        </div>
+
+        <!-- Answer card -->
+        <div class="answer-card hidden" id="answerCard">
+          <div class="answer-header">
+            <span class="answer-badge">Answer</span>
+            <button class="btn-copy" id="btnCopy" title="Copy answer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            </button>
+          </div>
+
+          <div class="question-echo" id="questionEcho"></div>
+          <div class="answer-text" id="answerText"></div>
+
+          <!-- Audio player -->
+          <div class="audio-section hidden" id="audioSection">
+            <div class="audio-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+              </svg>
+              Voice Output
+            </div>
+            <audio id="audioPlayer" controls></audio>
+          </div>
+
+          <div class="tts-unavailable hidden" id="ttsUnavailable">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            IBM Watson TTS not configured — text answer shown above.
+          </div>
+        </div>
+
+        <!-- Error card -->
+        <div class="error-card hidden" id="errorCard">
+          <span class="error-icon">⚠</span>
+          <span id="errorMessage"></span>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer class="site-footer">
+      <span>PDF Oracle</span>
+      <span class="sep">·</span>
+      <span>Flask + pdfplumber + IBM Watson TTS</span>
+      <span class="sep">·</span>
+      <span>Running locally on <code>127.0.0.1:5000</code></span>
+    </footer>
+
+  </div><!-- /app-shell -->
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
